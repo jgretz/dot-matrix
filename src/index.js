@@ -1,4 +1,4 @@
-import {initializePixel, pushFrame} from './pixel';
+import {SceneManager, findPixelKits} from './sdk';
 import {createBlankFrame} from './frames';
 import {HEIGHT, WIDTH} from './constants';
 
@@ -10,11 +10,14 @@ const oneDot = (x, y, color) => {
 };
 
 const main = async () => {
-  await initializePixel();
+  const pixels = await findPixelKits();
+  const sceneManager = pixels.map(pixel => new SceneManager(pixel));
 
   for (let i = 0; i < HEIGHT; i++) {
     for (let j = 0; j < WIDTH; j++) {
-      pushFrame(oneDot(j, i, '#ff0000'));
+      sceneManager.forEach(sm => {
+        sm.pushFrame(oneDot(j, i, '#ff0000'));
+      });
     }
   }
 };
