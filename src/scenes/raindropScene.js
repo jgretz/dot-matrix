@@ -1,4 +1,4 @@
-import {createBlankFrame} from '../frames';
+import {createBlankFrame} from '../util';
 import {HEIGHT, WIDTH, REFRESH_RATE} from '../constants';
 
 const COLORS = ['#ff0000', '#00ff00', '#0000ff'];

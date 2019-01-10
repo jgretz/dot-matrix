@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import _ from 'lodash';
-import {createBlankFrame} from '../frames';
+import createBlankFrame from './createBlankFrame';
 import {REFRESH_RATE, HEIGHT, WIDTH} from '../constants';
 
 // the pixel sdk represents the grid as a single dimensioned array of length 128.
