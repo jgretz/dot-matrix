@@ -1,6 +1,7 @@
 import SerialPort from 'serialport';
-import hexToBase64Colors from './hexToBase64Colors';
 import uuid from 'uuid';
+import hexToBase64Colors from './hexToBase64Colors';
+import {executeDirect, executeIndirect} from './executeOnPort';
 
 export default class PixelKit {
   constructor({port}) {
@@ -18,48 +19,19 @@ export default class PixelKit {
     };
   }
 
-  // helpers
-  callbackAndPromise() {
-    let resolve = null;
-    let reject = null;
-
-    const callback = err => {
-      if (err) {
-        console.error(err); // eslint-disable-line
-        reject(err);
-        return;
-      }
-
-      resolve();
-    };
-
-    const promise = new Promise((a, b) => {
-      resolve = a;
-      reject = b;
-    });
-
-    return {callback, promise};
-  }
-
-  // events
-  subscribeToEvents() {
-    this.port.on('close', this.indirectCallback());
-  }
-
   // public interface
   async connect() {
     if (this.state.connected) {
       return;
     }
 
-    const cap = this.callbackAndPromise();
+    try {
+      await executeIndirect(this.port, 'open');
 
-    this.port.on('open', cap.callback);
-    this.port.open();
-
-    await cap.promise;
-
-    this.state.connected = true;
+      this.state.connected = true;
+    } catch (err) {
+      console.error(err); // eslint-disable-line
+    }
   }
 
   async disconnect() {
@@ -67,14 +39,13 @@ export default class PixelKit {
       return;
     }
 
-    const cap = this.callbackAndPromise();
+    try {
+      await executeIndirect(this.port, 'close');
 
-    this.port.on('close', cap.callback);
-    this.port.close();
-
-    await cap.promise;
-
-    this.state.connected = false;
+      this.state.connected = false;
+    } catch (err) {
+      console.error(err); // eslint-disable-line
+    }
   }
 
   async streamFrame(frame) {
@@ -92,12 +63,14 @@ export default class PixelKit {
     const packet = `${JSON.stringify(rpcObject)}\r\n`;
 
     // make the request and wait for it to finish
-    const cap = this.callbackAndPromise();
+    try {
+      await executeDirect(this.port, 'write', Buffer.from(packet));
 
-    this.port.write(Buffer.from(packet), cap.callback);
+      return true;
+    } catch (err) {
+      console.error(err); // eslint-disable-line
 
-    await cap.promise;
-
-    return true;
+      return false;
+    }
   }
 }

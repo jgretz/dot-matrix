@@ -1,4 +1,5 @@
-import {SceneManager, findPixelKits} from './sdk';
+import {findPixelKits} from './sdk';
+import {SceneManager} from './util';
 import playRainDropScene from './scenes/raindropScene';
 
 const main = async () => {
