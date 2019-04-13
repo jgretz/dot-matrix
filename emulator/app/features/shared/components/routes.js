@@ -1,12 +1,12 @@
 import React from 'react';
 import {Switch, Route} from 'react-router';
 
-import {Emulator} from '../../display/components';
+import {EmulatorArray} from '../../emulator/components';
 import NotFound from './notFound';
 
 export default () => (
   <Switch>
-    <Route exact path="/" component={Emulator} />
+    <Route exact path="/" component={EmulatorArray} />
 
     <Route component={NotFound} />
   </Switch>
